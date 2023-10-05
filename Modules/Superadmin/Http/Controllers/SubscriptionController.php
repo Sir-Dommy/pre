@@ -232,6 +232,7 @@ class SubscriptionController extends BaseController
 
             \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             echo "File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage();
+            echo "<br><br> Error!!!";
             exit;
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }

@@ -24,6 +24,8 @@ class SuperadminController extends Controller
     {
         if (!auth()->user()->can('superadmin')) {
             $user = auth()->user();
+            // $permission = Permission::findOrCreate('superadmin', 'web');
+            // $user->givePermissionTo('superadmin');
             abort(403, 'Unauthorized action.');
         }
         // $permission = Permission::create([

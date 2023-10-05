@@ -26,7 +26,7 @@ class Superadmin
             return $next($request);
         } 
         else {
-            abort(403, 'Unauthorized action.');
+            abort(403, 'Unauthorized actions.');
         }
     }
 }
