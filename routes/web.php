@@ -475,3 +475,4 @@ Route::group(['middleware' => ['web', 'auth', 'language', 'AdminSidebarMenu', 's
 // test route
 // Route::get('/communicator', '\Modules\Superadmin\Http\Controllers\CommunicatorController@index');
 });
+

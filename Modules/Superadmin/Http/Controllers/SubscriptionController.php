@@ -4,6 +4,7 @@ namespace Modules\Superadmin\Http\Controllers;
 
 use \Notification;
 use App\Business;
+use App\Mpesa;
 use App\System;
 use App\Utils\ModuleUtil;
 
@@ -179,6 +180,66 @@ class SubscriptionController extends BaseController
         return $this->pay($package_id, 1);
     }
 
+    //send stk push
+    public function sendStk(){
+
+    }
+
+    //confirm mpesa payment
+    public function confirmMpesaPayment(){
+        $res = file_get_contents('php://input');
+        // Decode the JSON string into a PHP object
+        $jsonObject = json_decode($res);
+
+        // Access elements from the JSON object
+        $topic = $jsonObject->topic;
+        $id = $jsonObject->id;
+        $createdAt = $jsonObject->created_at;
+
+        // Access elements nested within the 'event' property
+        $eventType = $jsonObject->event->type;
+        $resourceId = $jsonObject->event->resource->id;
+        $amount = $jsonObject->event->resource->amount;
+
+        $reference = $jsonObject->event->resource->reference;
+        $till_number = $jsonObject->event->resource->till_number;
+        $sender_last_name = $jsonObject->event->resource->sender_last_name;
+        $sender_first_name = $jsonObject->event->resource->sender_first_name;
+        $sender_middle_name = $jsonObject->event->resource->sender_middle_name;
+        $sender_phone_number = $jsonObject->event->resource->sender_phone_number;
+        $status = $jsonObject->event->resource->status;
+
+        // Access elements within the '_links' property
+        $selfLink = $jsonObject->_links->self;
+        $resourceLink = $jsonObject->_links->resource;
+
+        $count = Mpesa::where('reference',$reference)->count();
+
+        if($count>0){
+            return "Transaction already exists";
+        }
+        else{
+            //insert into the mpesa_transactions table
+            $mpesa = new Mpesa;
+            $mpesa->reference = $reference;
+            $mpesa->amount = $amount;
+            $mpesa->till_no = $till_number;
+            $mpesa->mobile = $sender_phone_number;
+            $mpesa->payee_first_name = $sender_first_name;
+            $mpesa->payee_middle_name = $sender_middle_name;
+            $mpesa->payee_last_name = $sender_last_name;
+            $mpesa->trans_date = now(); // Assuming the current date and time
+            $mpesa->payee_name = $mpesa->payee_first_name = $sender_first_name." ".$sender_middle_name." ".$sender_last_name;;
+            $mpesa->allocated = 0;
+        
+            $mpesa->save();
+
+            return $topic;
+        }
+
+
+    }
+
     /**
      * Save the payment details and add subscription details
      * @return Response
@@ -232,7 +293,6 @@ class SubscriptionController extends BaseController
 
             \Log::emergency("File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage());
             echo "File:" . $e->getFile(). "Line:" . $e->getLine(). "Message:" . $e->getMessage();
-            echo "<br><br> Error!!!";
             exit;
             $output = ['success' => 0, 'msg' => $e->getMessage()];
         }

@@ -62,3 +62,12 @@ Route::group(['middleware' => ['web', 'SetSessionData', 'auth', 'language', 'tim
     });
 
 Route::get('/page/{slug}', 'Modules\Superadmin\Http\Controllers\PageController@showPage')->name('frontend-pages');
+
+
+
+
+
+
+
+// Callback urls
+Route::get('/confirmMpesaPayment', 'Modules\Superadmin\Http\Controllers\SubscriptionController@confirmMpesaPayment');
